@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3429247192277407"
+     crossorigin="anonymous"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RadioPosition — Canlı Dünya Radyoları & Kesintisiz Müzik</title>
+  <meta name="apple-itunes-app" content="app-id=6796070312">
+  <meta name="description" content="RadioPosition ile dünya çapında binlerce canlı radyo yayınını keşfedin, haritadan dinleyin, uyku ve alarm zamanlayıcılarını ücretsiz kullanın.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Leaflet CSS for World Radio Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- HLS.js for HLS (.m3u8) Audio Stream Playback across all browsers -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+  <!-- App Styles -->
+  <link rel="stylesheet" href="styles.css?v=3">
+</head>
+<body data-accent="coral">
+
+  <!-- Mobile Smart App Banner -->
+  <div class="smart-app-banner" id="smart-app-banner">
+    <button class="smart-banner-close" id="close-smart-banner" aria-label="Kapat">&times;</button>
+    <img src="assets/logo-removebg.png" alt="RadioPosition Logo" class="smart-banner-icon">
+    <div class="smart-banner-info">
+      <div class="smart-banner-title">RadioPosition Mobile</div>
+      <div class="smart-banner-subtitle">⭐⭐⭐⭐⭐ Uygulamasını Yükleyin</div>
+    </div>
+    <a href="https://apps.apple.com/us/app/radio-position/id6796070312" target="_blank" class="smart-banner-btn" id="smart-banner-open-btn">
+      AÇ / YÜKLE
+    </a>
+  </div>
+
+  <!-- App Header & Navigation -->
+  <header class="app-header">
+    <div class="header-container">
+      <a href="#" class="brand-logo" id="brand-logo-btn">
+        <img src="assets/logo-removebg.png" alt="RadioPosition Logo" id="app-logo-img" onerror="this.src='assets/logo-removebg.png'">
+        <span>RadioPosition</span>
+      </a>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-links">
+        <button class="nav-item active" data-tab="home">
+          <i data-lucide="radio"></i>
+          <span data-i18n="homeTitle">Radyo</span>
+        </button>
+        <button class="nav-item" data-tab="discover">
+          <i data-lucide="compass"></i>
+          <span data-i18n="discoverTitle">Keşfet</span>
+        </button>
+        <button class="nav-item" data-tab="map">
+          <i data-lucide="map-pin"></i>
+          <span data-i18n="mapTitle">Harita</span>
+        </button>
+        <button class="nav-item" data-tab="favorites">
+          <i data-lucide="bookmark"></i>
+          <span data-i18n="favoritesTitle">Favoriler</span>
+        </button>
+        <button class="nav-item" data-tab="settings">
+          <i data-lucide="settings"></i>
+          <span data-i18n="settingsTitle">Ayarlar</span>
+        </button>
+      </nav>
+
+      <!-- Language & Country Selectors -->
+      <div class="header-actions">
+        <select class="select-control" id="country-select" title="Varsayılan Ülke">
+          <option value="TR">🇹🇷 Türkiye</option>
+          <option value="US">🇺🇸 USA</option>
+          <option value="DE">🇩🇪 Deutschland</option>
+          <option value="GB">🇬🇧 United Kingdom</option>
+          <option value="FR">🇫🇷 France</option>
+          <option value="ES">🇪🇸 España</option>
+          <option value="IT">🇮🇹 Italia</option>
+          <option value="NL">🇳🇱 Nederland</option>
+          <option value="PL">🇵🇱 Polska</option>
+          <option value="PT">🇵🇹 Portugal</option>
+          <option value="RU">🇷🇺 Россия</option>
+          <option value="AR">🇪🇬 Egypt</option>
+          <option value="IN">🇮🇳 India</option>
+          <option value="JP">🇯🇵 Japan</option>
+          <option value="KR">🇰🇷 South Korea</option>
+          <option value="CN">🇨🇳 China</option>
+        </select>
+
+        <select class="select-control" id="language-select" title="Uygulama Dili">
+          <option value="tr">Türkçe</option>
+          <option value="en">English</option>
+          <option value="de">Deutsch</option>
+          <option value="es">Español</option>
+          <option value="fr">Français</option>
+          <option value="it">Italiano</option>
+          <option value="nl">Nederlands</option>
+          <option value="pl">Polski</option>
+          <option value="pt">Português</option>
+          <option value="ru">Русский</option>
+          <option value="ar">العربية</option>
+          <option value="hi">हिन्दी</option>
+          <option value="ja">日本語</option>
+          <option value="ko">한국어</option>
+          <option value="zh">中文</option>
+        </select>
+
+        <button class="icon-btn" id="theme-toggle-btn" title="Tema Değiştir">
+          <i data-lucide="sun"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Body -->
+  <main class="main-content">
+
+    <!-- 1. Home Tab -->
+    <section class="tab-content active" id="tab-home">
+      <!-- Hero Banner -->
+      <div class="hero-section">
+        <div class="featured-banner">
+          <div class="banner-glow"></div>
+          <div class="banner-content">
+            <h1 data-i18n="heroBannerTitle">Dünyanın Canlı Frekansları</h1>
+            <p data-i18n="heroBannerSub">Kristal netliğinde kesintisiz radyo yayınları, konum odaklı harita keşfi ve akıllı zamanlayıcılar.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommended Stations Section -->
+      <div class="section-header">
+        <h2 class="section-title"><i data-lucide="sparkles" style="color: var(--primary-color);"></i> <span data-i18n="recommendedForYou">Senin İçin Seçtiklerimiz ✨</span></h2>
+      </div>
+      <div class="station-grid" id="recommended-stations-grid"></div>
+
+      <!-- Featured Stations Section -->
+      <div class="section-header">
+        <h2 class="section-title"><i data-lucide="flame" style="color: #FF8A00;"></i> <span data-i18n="featuredStations">Öne Çıkan İstasyonlar 🔥</span></h2>
+      </div>
+      <div class="station-grid" id="featured-stations-grid"></div>
+
+      <!-- Local Country Radios Section -->
+      <div class="section-header">
+        <h2 class="section-title" id="local-radios-title"><i data-lucide="globe" style="color: #3B82F6;"></i> <span data-i18n="localRadios">Türkiye Radyoları 🇹🇷</span></h2>
+      </div>
+      <div class="station-grid" id="local-stations-grid"></div>
+    </section>
+
+    <!-- 2. Discover Tab -->
+    <section class="tab-content" id="tab-discover">
+      <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+        <h2 class="section-title"><i data-lucide="compass" style="color: var(--primary-color);"></i> <span data-i18n="discoverTitle">Keşfet & Filtrele</span></h2>
+        
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+          <div class="search-box" style="margin: 0; min-width: 240px; border-radius: var(--radius-full);">
+            <i data-lucide="search"></i>
+            <input type="text" id="discover-search-input" placeholder="Keşfet'te radyo veya tarz ara..." data-i18n-placeholder="searchPlaceholder">
+          </div>
+          <select class="select-control" id="discover-country-select" title="Ülke Filtresi">
+            <option value="ALL">🌐 Tüm Ülkeler</option>
+            <option value="TR">🇹🇷 Türkiye</option>
+            <option value="US">🇺🇸 USA</option>
+            <option value="DE">🇩🇪 Deutschland</option>
+            <option value="GB">🇬🇧 United Kingdom</option>
+            <option value="FR">🇫🇷 France</option>
+            <option value="ES">🇪🇸 España</option>
+            <option value="IT">🇮🇹 Italia</option>
+            <option value="NL">🇳🇱 Nederland</option>
+            <option value="PL">🇵🇱 Polska</option>
+            <option value="PT">🇵🇹 Portugal</option>
+            <option value="RU">🇷🇺 Россия</option>
+            <option value="AR">🇪🇬 Egypt</option>
+            <option value="IN">🇮🇳 India</option>
+            <option value="JP">🇯🇵 Japan</option>
+            <option value="KR">🇰🇷 South Korea</option>
+            <option value="CN">🇨🇳 China</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Genre Tag Chips Scroll -->
+      <div class="tags-scroll" id="discover-tags-list">
+        <button class="tag-chip active" data-tag="ALL">Tüm Türler</button>
+        <button class="tag-chip" data-tag="pop">Pop</button>
+        <button class="tag-chip" data-tag="rock">Rock</button>
+        <button class="tag-chip" data-tag="news">Haber</button>
+        <button class="tag-chip" data-tag="classical">Klasik</button>
+        <button class="tag-chip" data-tag="jazz">Caz</button>
+        <button class="tag-chip" data-tag="dance">Dance / EDM</button>
+        <button class="tag-chip" data-tag="arabesk">Arabesk</button>
+        <button class="tag-chip" data-tag="retro">Retro 80s 90s</button>
+      </div>
+
+      <div class="station-grid" id="discover-stations-grid"></div>
+    </section>
+
+    <!-- 3. Map Tab -->
+    <section class="tab-content" id="tab-map">
+      <div class="section-header">
+        <h2 class="section-title"><i data-lucide="map-pin" style="color: var(--primary-color);"></i> <span data-i18n="mapTitle">Dünya Radyo Haritası</span></h2>
+        <span style="font-size: 13px; color: var(--text-secondary);">Harita üzerindeki frekans pinlerine dokunarak canlı dinleyin</span>
+      </div>
+      <div id="map-container"></div>
+    </section>
+
+    <!-- 4. Favorites Tab -->
+    <section class="tab-content" id="tab-favorites">
+      <div class="section-header">
+        <h2 class="section-title"><i data-lucide="bookmark" style="color: var(--primary-color);"></i> <span data-i18n="myFavorites">Favorilerim 🔖</span></h2>
+      </div>
+      <div class="station-grid" id="favorites-stations-grid"></div>
+      <div id="no-favorites-view" style="display: none; text-align: center; padding: 60px 20px; color: var(--text-secondary);">
+        <i data-lucide="bookmark" style="width: 48px; height: 48px; color: var(--text-muted); margin-bottom: 12px;"></i>
+        <h3 data-i18n="noFavoritesYet">Henüz Kaydedilmiş İstasyon Yok</h3>
+        <p style="font-size: 14px; max-width: 400px; margin: 8px auto 0;" data-i18n="noFavoritesSubtitle">Keşfet veya Radyo sekmesindeki istasyonların kaydet simgesine dokunarak favorilerinize ekleyin.</p>
+      </div>
+    </section>
+
+    <!-- 5. Settings Tab -->
+    <section class="tab-content" id="tab-settings">
+      <div class="section-header">
+        <h2 class="section-title"><i data-lucide="settings" style="color: var(--primary-color);"></i> <span data-i18n="settingsTitle">Ayarlar & Tercihler</span></h2>
+      </div>
+
+      <div style="max-width: 680px; display: flex; flex-direction: column; gap: 20px;">
+        <!-- Default Country Preference -->
+        <div style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius-lg); padding: 20px;">
+          <h3 style="font-size: 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="globe" style="color: var(--primary-color);"></i> Varsayılan Ülke (Default Country)
+          </h3>
+          <select class="select-control" id="settings-country-select" style="width: 100%; padding: 12px;" title="Varsayılan Ülke">
+            <option value="TR">🇹🇷 Türkiye</option>
+            <option value="US">🇺🇸 USA</option>
+            <option value="DE">🇩🇪 Deutschland</option>
+            <option value="GB">🇬🇧 United Kingdom</option>
+            <option value="FR">🇫🇷 France</option>
+            <option value="ES">🇪🇸 España</option>
+            <option value="IT">🇮🇹 Italia</option>
+            <option value="NL">🇳🇱 Nederland</option>
+            <option value="PL">🇵🇱 Polska</option>
+            <option value="PT">🇵🇹 Portugal</option>
+            <option value="RU">🇷🇺 Россия</option>
+            <option value="AR">🇪🇬 Egypt</option>
+            <option value="IN">🇮🇳 India</option>
+            <option value="JP">🇯🇵 Japan</option>
+            <option value="KR">🇰🇷 South Korea</option>
+            <option value="CN">🇨🇳 China</option>
+          </select>
+        </div>
+        <!-- Theme Accent Selection -->
+        <div style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius-lg); padding: 20px;">
+          <h3 style="font-size: 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="palette" style="color: var(--primary-color);"></i> Renk Temaları (Color Accents)
+          </h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;">
+            <button class="tag-chip" data-accent-set="coral">Mercan (Coral)</button>
+            <button class="tag-chip" data-accent-set="cyberpunk">Cyberpunk Neon</button>
+            <button class="tag-chip" data-accent-set="emerald">Zümrüt Yeşili</button>
+            <button class="tag-chip" data-accent-set="midnight">Gece Moru</button>
+            <button class="tag-chip" data-accent-set="sunset">Gün Batımı</button>
+            <button class="tag-chip" data-accent-set="golden">Altın Lüks</button>
+          </div>
+        </div>
+
+        <!-- Rate Us Card -->
+        <div style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius-lg); padding: 20px;">
+          <h3 style="font-size: 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="star" style="color: #FFB800; fill: #FFB800;"></i> <span>Bizi Puanlayın & Destek Olun</span>
+          </h3>
+          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 14px;">
+            RadioPosition uygulamasını deneyimlediğiniz için teşekkürler! Bize mağazada 5 yıldız vererek gelişmemize destek olabilirsiniz.
+          </p>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <a href="https://apps.apple.com/us/app/radio-position/id6796070312" target="_blank" class="play-station-btn rate-store-btn" style="background: #000000; color: #ffffff; border: 1px solid rgba(255,255,255,0.2); box-shadow: none; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+              <i data-lucide="apple"></i> <span>App Store'da Puanla</span>
+            </a>
+            <a href="https://play.google.com/store/apps/details?id=com.sk.radio_position" target="_blank" class="play-station-btn rate-store-btn" style="background: #00875A; color: #ffffff; border: none; box-shadow: none; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+              <i data-lucide="smartphone"></i> <span>Google Play'de Puanla</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Legal & About -->
+        <div style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius-lg); padding: 20px;">
+          <h3 style="font-size: 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="shield-check" style="color: var(--primary-color);"></i> Yasal Dokümanlar & Haklar
+          </h3>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <a href="privacy_policy.html" target="_blank" class="play-station-btn" style="background: var(--surface-color); border: 1px solid var(--card-border); color: var(--text-primary); box-shadow: none; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+              <i data-lucide="file-text"></i> <span data-i18n="privacyPolicy">Gizlilik Politikası</span>
+            </a>
+            <a href="terms_of_use.html" target="_blank" class="play-station-btn" style="background: var(--surface-color); border: 1px solid var(--card-border); color: var(--text-primary); box-shadow: none; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+              <i data-lucide="file-text"></i> <span data-i18n="termsOfUse">Kullanım Koşulları</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- App Footer -->
+  <footer class="app-footer">
+    <div>© 2026 RadioPosition. All rights reserved.</div>
+    <div class="footer-links">
+      <a href="privacy_policy.html" target="_blank" id="footer-privacy-btn" data-i18n="privacyPolicy">Gizlilik Politikası</a>
+      <span>•</span>
+      <a href="terms_of_use.html" target="_blank" id="footer-terms-btn" data-i18n="termsOfUse">Kullanım Koşulları</a>
+    </div>
+  </footer>
+
+  <!-- Sticky Mini Player Bar -->
+  <div class="mini-player-bar" id="mini-player" style="display: none;">
+    <div class="player-inner">
+      <div class="player-station-detail">
+        <div class="player-thumb">
+          <img src="" id="mini-player-thumb" alt="Station Logo">
+        </div>
+        <div>
+          <div id="mini-player-title" style="font-weight: 700; font-size: 14px;">Radyo Seçin</div>
+          <div style="font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
+            <span id="mini-player-tag">CANLI RADYO</span>
+            <div class="live-wave-indicator" id="mini-live-wave" style="display: none;">
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="player-controls">
+        <button class="icon-btn" id="mini-fav-btn"><i data-lucide="bookmark"></i></button>
+        <button class="play-main-btn" id="mini-play-btn"><i data-lucide="play" style="margin-left: 2px;"></i></button>
+        <button class="icon-btn" id="mini-timer-btn" title="Zamanlayıcılar"><i data-lucide="clock"></i></button>
+        <button class="icon-btn" id="expand-player-btn" title="Tam Ekran Oyuncu"><i data-lucide="maximize-2"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Full Screen Player Modal -->
+  <div class="modal-overlay" id="player-modal">
+    <div class="modal-card" style="max-width: 480px; text-align: center;">
+      <div class="modal-header">
+        <div style="font-size: 13px; font-weight: 700; color: var(--primary-color); display: flex; align-items: center; gap: 6px;">
+          <span class="live-wave-indicator"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></span>
+          CANLI YAYIN
+        </div>
+        <button class="close-modal-btn" id="close-player-modal-btn"><i data-lucide="x"></i></button>
+      </div>
+
+      <div style="margin: 20px 0;">
+        <div style="width: 220px; height: 220px; border-radius: 32px; margin: 0 auto; overflow: hidden; background: var(--surface-color); border: 2px solid var(--card-border); box-shadow: var(--shadow-lg);">
+          <img src="" id="full-player-art" alt="Station Art" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+
+        <!-- Audio Visualizer Spectrum Canvas -->
+        <canvas id="visualizer-canvas" width="360" height="48" style="margin-top: 16px; border-radius: 12px;"></canvas>
+
+        <h2 id="full-player-title" style="font-size: 22px; margin-top: 12px;">Radyo İsmi</h2>
+        <p id="full-player-tags" style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">Canlı Frekans</p>
+      </div>
+
+      <!-- Controls Row -->
+      <div style="display: flex; align-items: center; justify-content: center; gap: 24px; margin: 24px 0;">
+        <button class="icon-btn" id="full-timer-sleep-btn" title="Uyku Zamanlayıcısı"><i data-lucide="moon"></i></button>
+        <button class="play-main-btn" id="full-play-btn" style="width: 64px; height: 64px;"><i data-lucide="play" style="width: 28px; height: 28px; margin-left: 3px;"></i></button>
+        <button class="icon-btn" id="full-timer-alarm-btn" title="Alarm Zamanlayıcısı"><i data-lucide="alarm-clock"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timer Setup Modal -->
+  <div class="modal-overlay" id="timer-modal">
+    <div class="modal-card" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 id="timer-modal-title" style="font-size: 18px;">Zamanlayıcı Kur</h3>
+        <button class="close-modal-btn" id="close-timer-modal-btn"><i data-lucide="x"></i></button>
+      </div>
+
+      <!-- Active Timer Banner -->
+      <div class="active-timer-banner" id="active-timer-banner" style="display: none;">
+        <div>
+          <div id="active-timer-label" style="font-weight: 700; font-size: 13px;">Zamanlayıcı Aktif</div>
+          <div id="active-timer-time" style="font-size: 12px; color: var(--accent-red); font-weight: 600; margin-top: 2px;">Kalan Süre: --:--</div>
+        </div>
+        <button class="cancel-timer-btn" id="cancel-active-timer-btn">Kaldır</button>
+      </div>
+
+      <div class="timer-options">
+        <button class="timer-opt-btn" data-mins="15">15 min</button>
+        <button class="timer-opt-btn" data-mins="30">30 min</button>
+        <button class="timer-opt-btn" data-mins="45">45 min</button>
+        <button class="timer-opt-btn" data-mins="60">60 min</button>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <input type="number" id="custom-minutes-input" placeholder="Özel dakika (örn: 25)" class="select-control" style="flex: 1; padding: 12px;">
+        <button class="play-station-btn" id="set-custom-timer-btn">Kur</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3rd Visit Rating Prompt Modal -->
+  <div class="modal-overlay" id="rate-app-modal">
+    <div class="modal-card" style="max-width: 440px; text-align: center; padding: 28px 24px;">
+      <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(255, 184, 0, 0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+        <i data-lucide="star" style="width: 36px; height: 36px; color: #FFB800; fill: #FFB800;"></i>
+      </div>
+      <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">RadioPosition'ı Sevdiniz mi?</h3>
+      <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 20px;">
+        RadioPosition deneyiminiz nasıl gidiyor? Uygulamamıza 5 yıldız vererek mağazalarda öne çıkmamıza destek olabilirsiniz!
+      </p>
+
+      <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 24px;">
+        <i data-lucide="star" style="width: 28px; height: 28px; color: #FFB800; fill: #FFB800;"></i>
+        <i data-lucide="star" style="width: 28px; height: 28px; color: #FFB800; fill: #FFB800;"></i>
+        <i data-lucide="star" style="width: 28px; height: 28px; color: #FFB800; fill: #FFB800;"></i>
+        <i data-lucide="star" style="width: 28px; height: 28px; color: #FFB800; fill: #FFB800;"></i>
+        <i data-lucide="star" style="width: 28px; height: 28px; color: #FFB800; fill: #FFB800;"></i>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <a href="https://apps.apple.com/us/app/radio-position/id6796070312" target="_blank" class="play-station-btn rate-action-btn" id="modal-rate-ios-btn" style="background: #000000; color: #ffffff; width: 100%; border: 1px solid rgba(255,255,255,0.2); justify-content: center; text-decoration: none; display: flex; align-items: center; gap: 8px; padding: 12px;">
+          <i data-lucide="apple"></i> <span>App Store'da Puanla</span>
+        </a>
+        <a href="https://play.google.com/store/apps/details?id=com.sk.radio_position" target="_blank" class="play-station-btn rate-action-btn" id="modal-rate-android-btn" style="background: #00875A; color: #ffffff; width: 100%; justify-content: center; border: none; text-decoration: none; display: flex; align-items: center; gap: 8px; padding: 12px;">
+          <i data-lucide="smartphone"></i> <span>Google Play'de Puanla</span>
+        </a>
+        <button class="play-station-btn" id="close-rate-modal-btn" style="background: transparent; color: var(--text-secondary); border: none; box-shadow: none; margin-top: 4px;">
+          Daha Sonra
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Audio Element -->
+  <audio id="global-audio-player" crossorigin="anonymous"></audio>
+
+  <!-- Firebase App SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCe73pGHKPvuajENE5NvdDpBk3N3H7UOK8",
+      authDomain: "radioposition-5abd9.firebaseapp.com",
+      projectId: "radioposition-5abd9",
+      storageBucket: "radioposition-5abd9.firebasestorage.app",
+      messagingSenderId: "638354016424",
+      appId: "1:638354016424:web:a6d3240f3e0104703f9a9d",
+      measurementId: "G-7E25HQTTXM"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    getAnalytics(app);
+    window.firebaseApp = app;
+  </script>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <!-- Main App Controller Script -->
+  <script src="app.js?v=3"></script>
+
+  <script>
+    if (typeof lucide !== 'undefined' && lucide && typeof lucide.createIcons === 'function') {
+      try { lucide.createIcons(); } catch(e) {}
+    }
+  </script>
+</body>
+</html>
