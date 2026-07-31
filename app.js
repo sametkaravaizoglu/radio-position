@@ -284,24 +284,26 @@ document.addEventListener('DOMContentLoaded', () => {
 // 3. Navigation Controller with Hash Routing & Leaflet Resize
 function switchTab(tabName) {
   const allTabIds = ['home', 'discover', 'map', 'favorites', 'settings'];
-  const targetTab = document.getElementById(`tab-${tabName}`);
+  
+  // Validate tab name or fallback to home
+  if (!allTabIds.includes(tabName)) {
+    tabName = 'home';
+  }
 
-  if (!targetTab) return;
-
-  // 1. Force hide ALL tab sections in DOM strictly
+  // 1. Force hide ALL section elements strictly
   allTabIds.forEach(id => {
     const el = document.getElementById(`tab-${id}`);
     if (el) {
       el.classList.remove('active');
-      el.style.cssText = 'display: none !important;';
+      el.setAttribute('style', 'display: none !important;');
     }
   });
 
-  // 2. Also query any leftover .tab-content elements and hide them
-  document.querySelectorAll('.tab-content').forEach(c => {
+  // 2. Also query any leftover .tab-content elements and force hide them
+  document.querySelectorAll('section.tab-content').forEach(c => {
     if (c.id !== `tab-${tabName}`) {
       c.classList.remove('active');
-      c.style.cssText = 'display: none !important;';
+      c.setAttribute('style', 'display: none !important;');
     }
   });
 
@@ -315,8 +317,11 @@ function switchTab(tabName) {
   });
 
   // 4. Display ONLY the target tab section
-  targetTab.classList.add('active');
-  targetTab.style.cssText = 'display: block !important;';
+  const targetTab = document.getElementById(`tab-${tabName}`);
+  if (targetTab) {
+    targetTab.classList.add('active');
+    targetTab.setAttribute('style', 'display: block !important;');
+  }
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -350,14 +355,18 @@ function setupNavigation() {
 
   window.addEventListener('hashchange', () => {
     const hash = window.location.hash.replace('#', '');
-    if (hash && document.getElementById(`tab-${hash}`)) {
+    if (hash && ['home', 'discover', 'map', 'favorites', 'settings'].includes(hash)) {
       switchTab(hash);
+    } else {
+      switchTab('home');
     }
   });
 
   const initialHash = window.location.hash.replace('#', '');
-  if (initialHash && document.getElementById(`tab-${initialHash}`)) {
+  if (initialHash && ['home', 'discover', 'map', 'favorites', 'settings'].includes(initialHash)) {
     switchTab(initialHash);
+  } else {
+    switchTab('home');
   }
 }
 
